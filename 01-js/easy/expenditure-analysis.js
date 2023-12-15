@@ -14,9 +14,31 @@
 */
 
 function calculateTotalSpentByCategory(transactions) {
-  return transactions.reduce((acc, cur) => {
-    const isFound = acc.find((el) => el.category === cur.category);
+  if (!transactions.length) return [];
+  const allTransactions = [];
+  transactions.map((transaction) => {
+    if (allTransactions.length === 0) {
+      allTransactions.push({
+        category: transaction.category,
+        totalSpent: transaction.price,
+      });
+      return;
+    }
+
+    const objIndex = allTransactions.findIndex(
+      (t) => t.category === transaction.category
+    );
+    if (objIndex != -1) {
+      allTransactions[objIndex].totalSpent += transaction.price;
+      return;
+    }
+
+    allTransactions.push({
+      category: transaction.category,
+      totalSpent: transaction.price,
+    });
   });
+  return allTransactions;
 }
 
 module.exports = calculateTotalSpentByCategory;
