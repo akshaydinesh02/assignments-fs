@@ -46,4 +46,80 @@ const app = express();
 
 app.use(bodyParser.json());
 
+let todos = [
+  // { id: 1, title: "study", completed: false, description: "study for 1 hour" },
+  // {
+  //   id: 2,
+  //   title: "exercise",
+  //   completed: false,
+  //   description: "exercise for 1 hour",
+  // },
+  // { id: 3, title: "sing", completed: false, description: "sing for 1 hour" },
+];
+
+app.get("/todos", function (req, res) {
+  res.json(todos);
+});
+
+app.get("/todos/:id", function (req, res) {
+  const { id } = req.params;
+  const idNum = parseInt(id);
+  const todoItem = todos.find((item) => item.id === idNum);
+  if (!todos.length || !todoItem) {
+    return res.status(404).json({
+      status: "fail",
+    });
+  }
+  res.json(todoItem);
+});
+
+app.post("/todos", function (req, res) {
+  const { title, description } = req.body;
+  if (!title || !description) {
+    return res.status(400).json({
+      status: "fail",
+      msg: "missing req fields",
+    });
+  }
+  const newTodoId = todos.length + 1 ?? 1;
+  todos.push({
+    id: newTodoId,
+    title,
+    description,
+    completed: false,
+  });
+  res.status(201).json({ id: newTodoId });
+});
+
+app.delete("/todos/:id", function (req, res) {
+  const { id } = req.params;
+  const idNum = parseInt(id);
+  const todoItemIndex = todos.findIndex((t) => t.id === idNum);
+  if (todoItemIndex === -1) {
+    res.status(404).send();
+  } else {
+    todos.splice(todoItemIndex, 1);
+    res.status(200).send();
+  }
+});
+
+app.put("/todos/:id", function (req, res) {
+  const { id } = req.params;
+  const idNum = parseInt(id);
+  const todoItemIndex = todos.findIndex((item) => item.id === idNum);
+  if (todoItemIndex === -1) {
+    res.status(404).send();
+  } else {
+    todos[todoItemIndex].title = req.body.title;
+    todos[todoItemIndex].description = req.body.description;
+    res.json(todos[todoItemIndex]);
+  }
+});
+
+app.use("*", (req, res, next) => {
+  res.status(404);
+});
+
+// app.listen(3000);
+
 module.exports = app;
