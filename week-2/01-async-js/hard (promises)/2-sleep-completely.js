@@ -5,6 +5,22 @@
  */
 
 function sleep(milliseconds) {
+  return new Promise((resolve) => {
+    const startTime = Date.now();
+
+    function busyLoop() {
+      while (Date.now() - startTime < milliseconds) {
+        // keeping thread busy
+      }
+
+      resolve();
+    }
+
+    setTimeout(busyLoop, 0);
+  });
 }
 
+sleep(3000)
+  .then((result) => console.log(result))
+  .catch((error) => console.log(error));
 module.exports = sleep;
